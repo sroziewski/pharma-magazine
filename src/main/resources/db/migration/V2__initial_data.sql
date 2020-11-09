@@ -1,0 +1,6 @@
+INSERT INTO public.stores (id, name, email, phone, street, city, zip_code, state) VALUES (1, 'BigPharma', 'BigPharma@BigPharma.pl', '123123123', 'Warszawska', 'Gdańsk', '80-450', 'Polska');
+INSERT INTO public.staff (id, first_name, last_name, email, password, phone, store_id, active) VALUES (1, 'Joe', 'Biden', 'joe@biden.us', '$2a$10$OZ0kHBA2sNGCiZ./guSxwuDUdBg/NP/5kYKb0.5Z29OEyqsu7jz32', '112', 1, true);
+INSERT INTO public.products (id, name, price, brand, created_at, updated_at, created_by_id, updated_by_id, active) VALUES (1, 'ALLINONE11', 0.12, 'Health Helper', '2020-11-09 04:13:34.208537', '2020-11-09 04:31:50.350372', 1, 1, true);
+INSERT INTO public.products (id, name, price, brand, created_at, updated_at, created_by_id, updated_by_id, active) VALUES (2, 'Tabletki na ból głowy', 11.212, 'StrongPills', '2020-11-09 04:32:39.552658', null, 1, null, true);
+INSERT INTO public.stocks (product_id, store_id, quantity, created_at, updated_at, created_by_id, updated_by_id) VALUES (1, 1, 21, '2020-11-09 06:28:57.661334', null, 1, null);
+INSERT INTO public.stocks (product_id, store_id, quantity, created_at, updated_at, created_by_id, updated_by_id) VALUES (2, 1, 121, '2020-11-09 06:29:12.107385', null, 1, null);
