@@ -6,7 +6,7 @@ build/
 !**/src/test/**/build/
 docker/
 logs/
-
+gradle/
 ### STS ###
 .apt_generated
 .classpath
