@@ -1,6 +1,6 @@
 # How to setup DB
 
-cd docker &&
+cd PROJECT_DIR && cd docker &&
 docker-compose up -d
 
 # How to run an app
