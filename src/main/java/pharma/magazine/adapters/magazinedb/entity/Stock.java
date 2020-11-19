@@ -17,7 +17,7 @@ import java.util.Optional;
 @NoArgsConstructor
 @Builder
 @AllArgsConstructor
-public class Stock implements PrintableId {
+public class Stock {
 
     @EmbeddedId
     private StockId stockId;
@@ -52,10 +52,5 @@ public class Stock implements PrintableId {
             .updatedAt(stockModel.getUpdatedAt())
             .stockId(StockId.of(stockModel.getProductId(), stockModel.getStoreId()))
             .build();
-    }
-
-    @Override
-    public String printId() {
-        return String.valueOf(stockId);
     }
 }

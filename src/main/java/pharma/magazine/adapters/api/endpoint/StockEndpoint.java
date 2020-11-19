@@ -11,27 +11,26 @@ import org.springframework.web.bind.annotation.RestController;
 import pharma.magazine.adapters.api.model.ResponsePayload;
 import pharma.magazine.adapters.api.model.StockDto;
 import pharma.magazine.adapters.api.service.Crud;
-import pharma.magazine.adapters.api.service.IDtoConverter;
-import pharma.magazine.adapters.api.service.StockEndpointService;
-import pharma.magazine.adapters.magazinedb.entity.Stock;
 import pharma.magazine.adapters.service.SessionService;
 import pharma.magazine.domain.model.StockModel;
 import pharma.magazine.domain.ports.service.ICrudService;
 import pharma.magazine.domain.ports.service.StockService;
 
-import java.util.function.Function;
+import javax.annotation.PostConstruct;
 
 @RestController
 @RequestMapping("/stocks")
-public class StockEndpoint extends Crud<StockDto, StockModel, Stock> {
+public class StockEndpoint extends Crud<StockDto, StockModel> {
 
     @Autowired
     private SessionService sessionService;
     @Autowired
     private StockService stockService;
-    @Autowired
-    private StockEndpointService stockEndpointService;
 
+    @PostConstruct
+    public void init(){
+        this.convert = stockModel -> StockDto.of(stockModel);
+    }
 
     @ApiOperation("List of stocks")
     @RequestMapping(
@@ -49,8 +48,7 @@ public class StockEndpoint extends Crud<StockDto, StockModel, Stock> {
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     public ResponseEntity<ResponsePayload> createStock(@RequestBody StockDto stockDto) {
-        Function<StockModel, Stock> function = model -> Stock.of(model);
-        return createEntity(StockDto.class, stockDto, function);
+        return createEntity(StockDto.class, stockDto);
     }
 
     @ApiOperation("Update a stock")
@@ -60,8 +58,7 @@ public class StockEndpoint extends Crud<StockDto, StockModel, Stock> {
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     public ResponseEntity<ResponsePayload> updateDocument(@RequestBody StockDto stockDto) {
-        Function<StockModel, Stock> function = model -> Stock.of(model);
-        return updateEntity(StockDto.class, stockDto, function);
+        return updateEntity(StockDto.class, stockDto);
     }
 
     @Override
@@ -72,10 +69,5 @@ public class StockEndpoint extends Crud<StockDto, StockModel, Stock> {
     @Override
     protected ICrudService<StockModel> getCrudService() {
         return stockService;
-    }
-
-    @Override
-    protected IDtoConverter<StockModel, StockDto> getDtoConverterService() {
-        return stockEndpointService;
     }
 }

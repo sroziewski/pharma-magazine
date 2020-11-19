@@ -13,7 +13,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import pharma.magazine.adapters.api.model.StockDto;
-import pharma.magazine.adapters.api.service.StockEndpointService;
 import pharma.magazine.domain.model.ProductModel;
 import pharma.magazine.domain.model.StaffModel;
 import pharma.magazine.domain.model.StockModel;
@@ -35,9 +34,6 @@ public class StockEndpointTest {
 
     @Autowired
     private MockMvc mockMvc;
-
-    @Autowired
-    private StockEndpointService stockEndpointService;
 
     @Autowired
     private StockService stockService;
@@ -64,7 +60,7 @@ public class StockEndpointTest {
         ProductModel productModel = productService.create(ProductModel.builder().brand("Brand").name("Name").active(true).build(), currentUser);
         long quantity = 21L;
         StockModel stockModel = StockModel.builder().productId(productModel.getId()).storeId(1L).quantity(quantity).build();
-        StockDto stockDto = stockEndpointService.converter(stockModel);
+        StockDto stockDto = StockDto.of(stockModel);
 
         String response = mockMvc.perform(post("/stocks")
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)

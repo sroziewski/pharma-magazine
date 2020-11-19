@@ -16,7 +16,7 @@ import java.util.Optional;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Product implements PrintableId {
+public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -61,8 +61,4 @@ public class Product implements PrintableId {
             .build();
     }
 
-    @Override
-    public String printId() {
-        return String.valueOf(id);
-    }
 }

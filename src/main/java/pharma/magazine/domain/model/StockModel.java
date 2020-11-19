@@ -4,14 +4,15 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDateTime;
 
-@Builder
+@SuperBuilder
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class StockModel implements ICrud {
+public class StockModel implements ICrud<String> {
     protected  Long productId;
     protected  Long storeId;
     protected  Long quantity;
@@ -21,7 +22,7 @@ public class StockModel implements ICrud {
     protected  StaffModel updatedBy;
 
     @Override
-    public Long getId() {
-        return null;
+    public String getId() {
+        return String.format("(%d, %d)", storeId, productId);
     }
 }

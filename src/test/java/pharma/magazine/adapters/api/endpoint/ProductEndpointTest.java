@@ -2,7 +2,6 @@ package pharma.magazine.adapters.api.endpoint;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import jdk.jfr.ContentType;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,10 +12,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultActions;
 import pharma.magazine.adapters.api.model.ProductDto;
-import pharma.magazine.adapters.api.model.StockDto;
-import pharma.magazine.adapters.api.service.ProductEndpointService;
 import pharma.magazine.domain.model.ProductModel;
 import pharma.magazine.domain.ports.service.ProductService;
 
@@ -37,9 +33,6 @@ public class ProductEndpointTest {
     private MockMvc mockMvc;
 
     @Autowired
-    private ProductEndpointService productEndpointService;
-
-    @Autowired
     private ProductService productService;
 
     private String accessToken = "am9lQGJpZGVuLnVzOnBhc3N3b3Jk";
@@ -54,7 +47,7 @@ public class ProductEndpointTest {
 
         String productName = "Name%^%#";
         ProductModel productModel = ProductModel.builder().active(true).brand("Brand").name(productName).build();
-        ProductDto productDto = productEndpointService.converter(productModel);
+        ProductDto productDto = ProductDto.of(productModel);
 
         String response = mockMvc.perform(post("/products")
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)

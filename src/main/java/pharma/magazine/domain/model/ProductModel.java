@@ -4,15 +4,16 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-@Builder
+@SuperBuilder
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ProductModel implements ICrud {
+public class ProductModel implements ICrud<Long> {
     protected  Long id;
     protected  String name;
     protected  BigDecimal price;

@@ -1,12 +1,13 @@
 package pharma.magazine.adapters.api.service;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import pharma.magazine.adapters.api.model.ListDto;
 import pharma.magazine.adapters.api.model.ResourceType;
 import pharma.magazine.adapters.api.model.ResponsePayload;
 import pharma.magazine.adapters.api.model.SuccessDto;
-import pharma.magazine.adapters.magazinedb.entity.PrintableId;
 import pharma.magazine.adapters.magazinedb.entity.Staff;
 import pharma.magazine.adapters.service.SessionService;
 import pharma.magazine.domain.model.ICrud;
@@ -17,28 +18,31 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public abstract class Crud<T extends ResponsePayload<S>, S extends ICrud, R extends PrintableId> {
+public abstract class Crud<T extends ResponsePayload<S>, S extends ICrud> {
 
     protected abstract SessionService getSession();
     protected abstract ICrudService<S> getCrudService();
-    protected abstract IDtoConverter<S, T> getDtoConverterService();
+    protected Function<S, T> convert;
 
-    protected ResponseEntity<ResponsePayload> createEntity(Class<T> type, T dto, Function<S, R> function) {
+    private static final Log logger = LogFactory.getLog(Crud.class);
+
+    protected ResponseEntity<ResponsePayload> createEntity(Class<T> type, T dto) {
         S model = dto.toModel();
         Staff currentUser = getSession().getCurrentUser();
         S saved = getCrudService().create(model, currentUser.toModel());
-        return createdEntity(type, function.apply(saved).printId());
+        return createdEntity(type, saved.getId());
     }
 
-    protected ResponseEntity<ResponsePayload> updateEntity(Class<T> type, T dto, Function<S, R> function) {
+    protected ResponseEntity<ResponsePayload> updateEntity(Class<T> type, T dto) {
         S model = dto.toModel();
         Staff currentUser = getSession().getCurrentUser();
         Optional<S> updatedOpt = getCrudService().update(model, currentUser.toModel());
         S updated = updatedOpt.orElseThrow(UpdateException::new);
-        return updatedEntity(type, function.apply(updated).printId());
+        return updatedEntity(type, updated.getId());
     }
 
-    protected ResponseEntity<ResponsePayload> createdEntity(Class<T> type, String id) {
+    protected ResponseEntity<ResponsePayload> createdEntity(Class<T> type, Object id) {
+        logger.info("createdEntity(): " + type + " " + id);
         return new ResponseEntity<>(SuccessDto.builder()
                 .event(SuccessDto.EventType.CREATED)
                 .resourceType(ResourceType.fromClass(type))
@@ -47,7 +51,8 @@ public abstract class Crud<T extends ResponsePayload<S>, S extends ICrud, R exte
                 .build(), HttpStatus.CREATED);
     }
 
-    protected ResponseEntity<ResponsePayload> updatedEntity(Class<T> type, String id) {
+    protected ResponseEntity<ResponsePayload> updatedEntity(Class<T> type, Object id) {
+        logger.info("updatedEntity(): " + type + " " + id);
         return new ResponseEntity<>(SuccessDto.builder()
                 .event(SuccessDto.EventType.UPDATED)
                 .resourceType(ResourceType.fromClass(type))
@@ -60,7 +65,8 @@ public abstract class Crud<T extends ResponsePayload<S>, S extends ICrud, R exte
         List<S> all = getCrudService().findAll();
         long count = all.size();
         List<T> elements = all.stream()
-                .map(s -> getDtoConverterService().converter(s)).collect(Collectors.toList());
+                .map(s -> convert.apply(s)).collect(Collectors.toList());
+        logger.info("getEntities(): "+elements.stream().map(o->o.toString()).collect(Collectors.joining(",")));
         return ResponseEntity.ok(ListDto.<T>builder().total(count).content(elements).build());
     }
 

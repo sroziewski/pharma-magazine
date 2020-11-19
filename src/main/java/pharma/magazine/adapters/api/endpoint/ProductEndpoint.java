@@ -11,26 +11,26 @@ import org.springframework.web.bind.annotation.RestController;
 import pharma.magazine.adapters.api.model.ProductDto;
 import pharma.magazine.adapters.api.model.ResponsePayload;
 import pharma.magazine.adapters.api.service.Crud;
-import pharma.magazine.adapters.api.service.IDtoConverter;
-import pharma.magazine.adapters.api.service.ProductEndpointService;
-import pharma.magazine.adapters.magazinedb.entity.Product;
 import pharma.magazine.adapters.service.SessionService;
 import pharma.magazine.domain.model.ProductModel;
 import pharma.magazine.domain.ports.service.ICrudService;
 import pharma.magazine.domain.ports.service.ProductService;
 
-import java.util.function.Function;
+import javax.annotation.PostConstruct;
 
 @RestController
 @RequestMapping("/products")
-public class ProductEndpoint extends Crud<ProductDto, ProductModel, Product> {
+public class ProductEndpoint extends Crud<ProductDto, ProductModel> {
 
     @Autowired
     private SessionService sessionService;
     @Autowired
     private ProductService productService;
-    @Autowired
-    private ProductEndpointService productEndpointService;
+
+    @PostConstruct
+    public void init(){
+        this.convert = productModel -> ProductDto.of(productModel);
+    }
 
     @ApiOperation("List of products")
     @RequestMapping(
@@ -48,8 +48,7 @@ public class ProductEndpoint extends Crud<ProductDto, ProductModel, Product> {
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     public ResponseEntity<ResponsePayload> createProduct(@RequestBody ProductDto productDto) {
-        Function<ProductModel, Product> function = model -> Product.of(model);
-        return createEntity(ProductDto.class, productDto, function);
+        return createEntity(ProductDto.class, productDto);
     }
 
     @ApiOperation("Update a product")
@@ -59,8 +58,7 @@ public class ProductEndpoint extends Crud<ProductDto, ProductModel, Product> {
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     public ResponseEntity<ResponsePayload> updateDocument(@RequestBody ProductDto productDto) {
-        Function<ProductModel, Product> function = model -> Product.of(model);
-        return updateEntity(ProductDto.class, productDto, function);
+        return updateEntity(ProductDto.class, productDto);
     }
 
     @Override
@@ -73,8 +71,5 @@ public class ProductEndpoint extends Crud<ProductDto, ProductModel, Product> {
         return productService;
     }
 
-    @Override
-    protected IDtoConverter<ProductModel, ProductDto> getDtoConverterService() {
-        return productEndpointService;
-    }
+
 }
